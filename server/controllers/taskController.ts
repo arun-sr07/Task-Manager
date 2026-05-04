@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { storage } from "../storage";
-import { insertTaskSchema } from "@shared/schema";
-import { sanitizeInput, containsDangerousPatterns } from "../utils/sanitize";
+import { storage } from "../storage.js";
+import { insertTaskSchema } from "@shared/schema.js";
+import { sanitizeInput, containsDangerousPatterns } from "../utils/sanitize.js";
 
 export const taskController = {
   // GET /api/tasks - Get all tasks

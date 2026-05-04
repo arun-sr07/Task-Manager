@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { basicAuth } from "./middleware/auth";
-import { taskController } from "./controllers/taskController";
-import { logController } from "./controllers/logController";
+import { basicAuth } from "./middleware/auth.js";
+import { taskController } from "./controllers/taskController.js";
+import { logController } from "./controllers/logController.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply Basic Auth middleware to all API routes

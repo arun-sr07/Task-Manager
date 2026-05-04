@@ -1,5 +1,5 @@
-import { type Task, type InsertTask, type AuditLog, type InsertAuditLog, tasks, auditLogs } from "@shared/schema";
-import { db } from "./db";
+import { type Task, type InsertTask, type AuditLog, type InsertAuditLog, tasks, auditLogs } from "@shared/schema.js";
+import { db } from "./db.js";
 import { eq, desc } from "drizzle-orm";
 
 // Storage interface with all CRUD operations

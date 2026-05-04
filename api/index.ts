@@ -1,11 +1,12 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "../server/routes.js";
-import { setupVite, serveStatic, log } from "../server/vite.js";
+import { serveStatic, log } from "../server/vite.js";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -36,24 +37,20 @@ app.use((req, res, next) => {
   next();
 });
 
-const startServer = async () => {
-  const server = await registerRoutes(app);
+// Register routes synchronously
+registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+// Error handling
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  console.error("Express Error:", err);
+  res.status(status).json({ message });
+});
 
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-};
-
-startServer();
+// Serve static files in production
+if (process.env.NODE_ENV === "production") {
+  serveStatic(app);
+}
 
 export default app;

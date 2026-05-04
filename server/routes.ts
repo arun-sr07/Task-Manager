@@ -4,7 +4,7 @@ import { basicAuth } from "./middleware/auth.js";
 import { taskController } from "./controllers/taskController.js";
 import { logController } from "./controllers/logController.js";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export function registerRoutes(app: Express): Server {
   // Apply Basic Auth middleware to all API routes
   app.use("/api", basicAuth);
 
@@ -22,3 +22,4 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+

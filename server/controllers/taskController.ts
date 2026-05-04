@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { storage } from "../storage.js";
-import { insertTaskSchema } from "@shared/schema.js";
+import { insertTaskSchema } from "../../shared/schema.js";
 import { sanitizeInput, containsDangerousPatterns } from "../utils/sanitize.js";
 
 export const taskController = {

@@ -8,6 +8,7 @@ export const logController = {
       const logs = await storage.getLogs();
       res.json(logs);
     } catch (error) {
+      console.error("Error in getLogs:", error);
       res.status(500).json({ error: "Failed to retrieve audit logs" });
     }
   },

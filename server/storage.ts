@@ -1,4 +1,6 @@
-import { type Task, type InsertTask, type AuditLog } from "@shared/schema";
+import { type Task, type InsertTask, type AuditLog, type InsertAuditLog, tasks, auditLogs } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 // Storage interface with all CRUD operations
 export interface IStorage {
@@ -11,7 +13,46 @@ export interface IStorage {
   
   // Audit log operations
   getLogs(): Promise<AuditLog[]>;
-  createLog(log: Omit<AuditLog, "id">): Promise<AuditLog>;
+  createLog(log: InsertAuditLog): Promise<AuditLog>;
+}
+
+export class DatabaseStorage implements IStorage {
+  async getTasks(): Promise<Task[]> {
+    return await db.select().from(tasks).orderBy(desc(tasks.id));
+  }
+
+  async getTask(id: number): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task;
+  }
+
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const [task] = await db.insert(tasks).values(insertTask).returning();
+    return task;
+  }
+
+  async updateTask(id: number, insertTask: InsertTask): Promise<Task | undefined> {
+    const [updatedTask] = await db
+      .update(tasks)
+      .set(insertTask)
+      .where(eq(tasks.id, id))
+      .returning();
+    return updatedTask;
+  }
+
+  async deleteTask(id: number): Promise<boolean> {
+    const [deletedTask] = await db.delete(tasks).where(eq(tasks.id, id)).returning();
+    return !!deletedTask;
+  }
+
+  async getLogs(): Promise<AuditLog[]> {
+    return await db.select().from(auditLogs).orderBy(desc(auditLogs.id));
+  }
+
+  async createLog(log: InsertAuditLog): Promise<AuditLog> {
+    const [auditLog] = await db.insert(auditLogs).values(log).returning();
+    return auditLog;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -42,7 +83,7 @@ export class MemStorage implements IStorage {
       id,
       title: insertTask.title,
       description: insertTask.description,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
     this.tasks.set(id, task);
     return task;
@@ -72,10 +113,11 @@ export class MemStorage implements IStorage {
     return Array.from(this.logs.values()).sort((a, b) => b.id - a.id);
   }
 
-  async createLog(log: Omit<AuditLog, "id">): Promise<AuditLog> {
+  async createLog(log: InsertAuditLog): Promise<AuditLog> {
     const id = this.logIdCounter++;
     const auditLog: AuditLog = {
       id,
+      timestamp: new Date(),
       ...log,
     };
     this.logs.set(id, auditLog);
@@ -83,4 +125,5 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
+

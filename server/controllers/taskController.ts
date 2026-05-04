@@ -10,6 +10,7 @@ export const taskController = {
       const tasks = await storage.getTasks();
       res.json(tasks);
     } catch (error) {
+      console.error("Error in getTasks:", error);
       res.status(500).json({ error: "Failed to retrieve tasks" });
     }
   },
@@ -66,7 +67,6 @@ export const taskController = {
 
       // Create audit log
       await storage.createLog({
-        timestamp: new Date().toISOString(),
         action: "Create",
         taskId: task.id,
         updatedContent: `title: "${task.title}", description: "${task.description}"`,
@@ -75,6 +75,7 @@ export const taskController = {
 
       res.status(201).json(task);
     } catch (error) {
+      console.error("Error in createTask:", error);
       res.status(500).json({ error: "Failed to create task" });
     }
   },
@@ -135,7 +136,6 @@ export const taskController = {
 
       // Create audit log
       await storage.createLog({
-        timestamp: new Date().toISOString(),
         action: "Update",
         taskId: id,
         updatedContent: changes.length > 0 ? changes.join(", ") : null,
@@ -163,7 +163,6 @@ export const taskController = {
 
       // Create audit log
       await storage.createLog({
-        timestamp: new Date().toISOString(),
         action: "Delete",
         taskId: id,
         updatedContent: null,

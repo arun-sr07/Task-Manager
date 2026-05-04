@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes.js";
-import { setupVite, serveStatic, log } from "./vite.js";
+import { serveStatic, log } from "./vite.js";
 
 export const app = express();
 app.use(express.json());
@@ -49,10 +49,12 @@ const startServer = async () => {
   });
 
   if (app.get("env") === "development") {
+    const { setupVite } = await import("./vite-dev.js");
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
+
 
   // Only start the server if we're not in a serverless environment
   if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {

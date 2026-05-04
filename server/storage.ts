@@ -118,12 +118,16 @@ export class MemStorage implements IStorage {
     const auditLog: AuditLog = {
       id,
       timestamp: new Date(),
-      ...log,
+      action: log.action,
+      taskId: log.taskId,
+      updatedContent: log.updatedContent ?? null,
+      notes: log.notes ?? null,
     };
     this.logs.set(id, auditLog);
     return auditLog;
   }
 }
+
 
 export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();
 

@@ -12,8 +12,8 @@
   ],
   "functions": {
     "api/index.ts": {
-      "runtime": "vercel-node@latest",
       "includeFiles": "dist/public/**"
     }
   }
 }
+
